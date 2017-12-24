@@ -8,38 +8,51 @@ class ClassCache {
     this._cache = {}
   }
 
-  register (Class, args, gc) {
-    assert(Class, 'ClassCache: Must pass a class or typeObject as arguments[0]')
-    if (typeof Class === 'object') {
-      // Class is a typeObj
-      return this._registerTypeObj(Class)
-    } else {
-      return this._registerArgs(Class, args, gc)
+  register (typeKey, Class, opts) {
+    if (arguments.length === 1) {
+      if (typeKey === 'object') {
+        return this._registerTypeObj(typeKey)
+      }
+      Class = typeKey
+      typeKey = 'default'
     }
+    if (arguments.length === 2) {
+      if (typeof typeKey === 'function') {
+        opts = Class
+        Class = typeKey
+        typeKey = 'default'
+      }
+    }
+    assert(typeof typeKey === 'string', 'ClassCache: typeKey must be a string or omitted')
+    assert(typeof Class === 'function', 'ClassCache: Class must be a class constructor')
+    return this._registerArgs(typeKey, Class, opts)
   }
 
   _registerTypeObj (TypeObj) {
     Object.assign(this._types, TypeObj)
   }
 
-  _registerArgs (Class, args, gc) {
-    let classBundle = [Class]
-    if (args) classBundle.push(args)
-    if (gc) classBundle.push(gc)
+  _registerArgs (typeKey, Class, opts) {
+    let classBundle = Object.assign({ class: Class }, opts)
     this._registerTypeObj({
-      default: classBundle
+      [typeKey]: classBundle
     })
   }
 
   unregister (/* ...types */) {
-    arguments.forEach(type => delete this._types[type])
+    arguments.forEach(typeKey => delete this._types[typeKey])
   }
 
-  get (key, type, args, gc) {
+  get (key, typeKeyOrClass, args, gc) {
     if (this._cache[key]) {
-      // TODO Check if type or args or gc has changed
       return this._cache[key].instance
+    } else {
+      this._cache[key] = this._createInstance(key)
     }
+  }
+
+  _createInstance (type, opts) {
+
   }
 
   set () {}
