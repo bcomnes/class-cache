@@ -128,12 +128,12 @@ See examples for more details.
 
 [0]: https://img.shields.io/badge/stability-experimental-orange.svg?style=flat-square
 [1]: https://nodejs.org/api/documentation.html#documentation_stability_index
-[2]: https://img.shields.io/npm/v/nanomap.svg?style=flat-square
-[3]: https://npmjs.org/package/nanomap
-[4]: https://img.shields.io/travis/bcomnes/nanomap/master.svg?style=flat-square
-[5]: https://travis-ci.org/bcomnes/nanomap
-[8]: http://img.shields.io/npm/dm/nanomap.svg?style=flat-square
-[9]: https://npmjs.org/package/nanomap
+[2]: https://img.shields.io/npm/v/class-cache.svg?style=flat-square
+[3]: https://npmjs.org/package/class-cache
+[4]: https://img.shields.io/travis/bcomnes/class-cache/master.svg?style=flat-square
+[5]: https://travis-ci.org/bcomnes/class-cache
+[8]: http://img.shields.io/npm/dm/class-cache.svg?style=flat-square
+[9]: https://npmjs.org/package/class-cache
 [10]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square
 [11]: https://github.com/feross/standard
 [bel]: https://github.com/shama/bel
