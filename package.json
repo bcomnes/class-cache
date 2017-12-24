@@ -13,6 +13,7 @@
     "budo": "^10.0.4",
     "choo": "^6.0.1",
     "dependency-check": "^2.6.0",
+    "existy": "^1.0.1",
     "fy-shuffle": "^1.0.0",
     "lodash.isequal": "^4.5.0",
     "nanocomponent": "^6.4.1",

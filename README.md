@@ -15,7 +15,7 @@ const AThirdClass = require('a-third-class')
 
 const c = new ClassCache()
 
-c.register(DefaultClass, ['some', {default: 'constructor-args'}])
+c.register(DefaultClass, {args: ['some', {default: 'constructor-args'}]})
 
 const a = c.get('my-instance') // Creates and returns an instance of DefaultClass
 const b = c.get('my-instance')
@@ -23,7 +23,7 @@ console.log(a === b) // true
 
 c.register({
   'some-class': SomeClass,
-  'another-class': [AnotherClass, {class: 'specific', constructor: 'args'}]
+  'another-class': {class: AnotherClass, args: ['class', 'specific']
 })
 
 c.get('some-instance', 'some-class') // return new SomeClass instance
@@ -50,15 +50,22 @@ Create a new component.
 }
 ```
 
-### `c.register(Class, [args], [gc])`
+### `c.register([typeKey = 'default'], Class, [opts])`
 
-Define a the `default` `Class` type for the cache.  Optionally set default `args` to instantiate with, as well as a default `gc` function.
+Define a `Class` for the optional `typeKey`.  The default `typeKey` is `default`, which is used whenever a `typeKey` is omitted during `get`s and `set`s.  `opts` include: 
 
-This is a shortcut for defining a `default` class using a typeObject definition:
+```js
+{
+  gc: undefined // a typeKey specific GC function,
+  args: [] // default arguments instance arguments
+}
+```
+
+This is a shortcut for defining with a typeObject:
 
 ```js
 c.register({
-  default: [Class, [args], [gc]]
+  typeKey: { class: Class, ...opts }
 })
 ```
 
@@ -69,19 +76,17 @@ Define class 'type's using a `typeObject` definition.  A typeObject is an object
 ```js
 c.register({
   default: Class, // Class with no args or gc.  Uses instance gc function.
-  baz: [Class], // Same as above.
-  foo: [FooClass, args], // Provide default type instantiation args
-  bar: [BarClass, args, gc] // Provide type args and gc
+  baz: { class: Class, ...opts }
 })
 ```
 
 Types are `Object.assign`ed over previously registered types.
 
-### `c.unregister(type...)`
+### `c.unregister(...types)`
 
-Pass type keys to un-register them.  Instances are untouched. 
+Pass typeKeys as arguments to un-register them.  Instances are untouched during this process. 
 
-### `c.get(key, [Class || type], [args], [gc])`
+### `c.get(key, [Class || typeKey], [opts])`
 
 Return instance of `Class` or defined `type` class at `key`.  If an instance does not yet exist at `key`, it will be instantiated with `args` along with a `key` specific `gc` function.  If `type` is not defined, this method will throw.
 
@@ -89,7 +94,8 @@ Omitting optional method arguments delegates to the next most specific option.
 
 ```js
 c.get('some-key') // Return or create the 'default' Class
-c.get('some-key', null, ['arg0', 'arg2']) // Return the default registerd class with specific args
+c.get('some-key', {args: ['arg0', 'arg2']})
+c.get('some-key', null, {args: ['arg0', 'arg2']}) // Return the default registerd class with specific args
 c.get('some-key', 'some-type', ['arg0', 'arg2']) // Return the `some-type` class at `some-key`.
 
 c.get('some-key', SomeOtherClass)
@@ -97,7 +103,7 @@ c.get('some-key', SomeOtherClass)
 
 If `key` is already instantiated, `args` is ignored.  Pass changing properties as subsequent calls to the returned instance.  If `type` or `Class` changes, the `key` instance is re-instantiated.
 
-### `c.set(key, [Class || type], [args], [gc])`
+### `c.set(key, [Class || type], [opts])`
 
 Force instantiate the class instance at `key`.  Follows the same override behavior as `get`.  If you must change `args` on a key, this is the safest way to do that.
 
