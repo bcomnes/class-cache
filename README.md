@@ -15,13 +15,13 @@ const AThirdClass = require('a-third-class')
 
 const c = new ClassCache()
 
-c.use(DefaultClass, ['some', {default: 'constructor-args'}])
+c.register(DefaultClass, ['some', {default: 'constructor-args'}])
 
 const a = c.get('my-instance') // Creates and returns an instance of DefaultClass
 const b = c.get('my-instance')
 console.log(a === b) // true
 
-c.use({
+c.register({
   'some-class': SomeClass,
   'another-class': [AnotherClass, {class: 'specific', constructor: 'args'}]
 })
