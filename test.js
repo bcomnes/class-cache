@@ -60,9 +60,27 @@ test('class-cache argument registration', t => {
 
   t.ok(c.get('instance1') instanceof Class1, 'default argument registration works')
   t.ok(c.get('instance2', 'foo') instanceof Class2, 'named argument registration works')
-  const instance3 = c.get('instance3', Class3, 'unregisterd class get works')
-  t.ok(instance3 instanceof Class3, 'unregistered get returns the unregistered class isntance')
+  const instance3 = c.get('instance3', Class3, 'unregistered class get works')
+  t.ok(instance3 instanceof Class3, 'unregistered get returns the unregistered class instance')
   t.equal(instance3, c.get('instance3', Class3), 'subsequent lookup caches')
-  t.notEqual(instance3, c.get('instance3', Class2), 're-instantiate unregisted get if class changes')
+  t.notEqual(instance3, c.get('instance3', Class2), 're-instantiate unregistered get if class changes')
+  t.end()
+})
+
+test('class-cache argument cascade', t => {
+  const c = new ClassCache({args: ['root name']})
+
+  c.register(Class1, { args: ['default name'] })
+
+  const instance1 = c.get('foo')
+  t.equal(instance1.name, 'default name', 'args are applied at the type level')
+  c.register('other-class', Class2)
+  const instance2 = c.get('bar', 'other-class')
+  t.equal(instance2.name, 'root name', 'create another class without args')
+  const instance3 = c.get('baz', Class3, {args: ['third name']})
+  t.equal(instance3.name, 'third name', 'create class with specific args')
+  const instance4 = c.get('biz', {args: ['fourth name']})
+  t.equal(instance4.name, 'fourth name', 'default instance with specific opts')
+  t.equal(c.get('biz', {args: ['fifth name']}).name, 'fourth name', 'args are ignored if already created')
   t.end()
 })

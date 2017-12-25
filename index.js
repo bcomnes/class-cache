@@ -2,8 +2,8 @@ const assert = require('assert')
 
 class ClassCache {
   constructor (opts = {}) {
-    const { gc } = opts
-    if (gc) this.gc = gc
+    const { gc = instance => false, args = [] } = opts // Top level defaults
+    this._opts = { gc, args }
     this._types = {}
     this._cache = {}
   }
@@ -28,8 +28,13 @@ class ClassCache {
     return this._registerArgs(typeKey, Class, opts)
   }
 
-  _registerTypeObj (TypeObj) {
-    Object.assign(this._types, TypeObj)
+  _registerTypeObj (typeObj) {
+    for (const typeKey in typeObj) {
+      let typeOrClass = typeObj[typeKey]
+      if (typeof typeOrClass === 'function') typeOrClass = { class: typeOrClass } // Class passed on key
+      Object.setPrototypeOf(typeOrClass, this._opts)
+      this._types[typeKey] = typeOrClass
+    }
   }
 
   _registerArgs (typeKey, Class, opts) {
@@ -66,31 +71,32 @@ class ClassCache {
       assert(typeObj, `ClassCache: typeKey (${typeKeyOrClass}) must be registered before use`)
       InstanceClass = typeObj.class || typeObj
     }
-    return cacheBundle.class === InstanceClass
+    return cacheBundle.instance.constructor === InstanceClass
   }
 
   _createInstance (typeKeyOrClass, opts) {
     let InstanceClass = typeKeyOrClass
-    let typeOpts
+    let cacheBundle = {...opts}
     if (typeof typeKeyOrClass === 'string') {
       const typeObj = this._types[typeKeyOrClass]
       assert(typeObj, `ClassCache: typeKey (${typeKeyOrClass}) must be registered before use`)
-      InstanceClass = typeObj.class || typeObj
-      typeOpts = typeObj.opts || {}
+      InstanceClass = typeObj.class
+      Object.setPrototypeOf(cacheBundle, typeObj)
+    } else {
+      // Get Class literal
+      Object.setPrototypeOf(cacheBundle, this._opts)
     }
     assert(typeof InstanceClass === 'function', `ClassCache: Class or typeKey must not be undefined without a 'default' typeKey registered.`)
-    const { args = [] } = Object.assign({}, typeOpts, opts)
-    const cacheBundle = {
-      class: InstanceClass,
-      instance: new InstanceClass(...args),
-      ...opts
-    }
+    assert(Array.isArray(cacheBundle.args), `ClassCache: args (${cacheBundle.args}) must be an array`)
+    cacheBundle.instance = new InstanceClass(...cacheBundle.args)
     return cacheBundle
   }
 
-  set () {}
-  gc (instance) { return false }
-  clear () {}
+  set (key, typeKeyOrClass = 'default', opts) {}
+  gc () {}
+  clear () {
+
+  }
   delete () {}
   has () {}
 }
