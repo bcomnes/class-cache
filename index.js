@@ -10,7 +10,7 @@ class ClassCache {
 
   register (typeKey, Class, opts) {
     if (arguments.length === 1) {
-      if (typeKey === 'object') {
+      if (typeof typeKey === 'object') {
         return this._registerTypeObj(typeKey)
       }
       Class = typeKey
@@ -43,16 +43,49 @@ class ClassCache {
     arguments.forEach(typeKey => delete this._types[typeKey])
   }
 
-  get (key, typeKeyOrClass, args, gc) {
-    if (this._cache[key]) {
-      return this._cache[key].instance
+  get (key, typeKeyOrClass = 'default', opts) {
+    assert(key, 'ClassCache: instance key is required')
+    if (typeof typeKeyOrClass === 'object') {
+      opts = typeKeyOrClass
+      typeKeyOrClass = 'default'
+    }
+    const cacheBundle = this._cache[key]
+    if (cacheBundle && this._isSameType(cacheBundle, typeKeyOrClass)) {
+      return cacheBundle.instance
     } else {
-      this._cache[key] = this._createInstance(key)
+      const newCacheBundle = this._createInstance(typeKeyOrClass, opts)
+      this._cache[key] = newCacheBundle
+      return newCacheBundle.instance
     }
   }
 
-  _createInstance (type, opts) {
+  _isSameType (cacheBundle, typeKeyOrClass) {
+    let InstanceClass = typeKeyOrClass
+    if (typeof typeKeyOrClass === 'string') {
+      const typeObj = this._types[typeKeyOrClass]
+      assert(typeObj, `ClassCache: typeKey (${typeKeyOrClass}) must be registered before use`)
+      InstanceClass = typeObj.class || typeObj
+    }
+    return cacheBundle.class === InstanceClass
+  }
 
+  _createInstance (typeKeyOrClass, opts) {
+    let InstanceClass = typeKeyOrClass
+    let typeOpts
+    if (typeof typeKeyOrClass === 'string') {
+      const typeObj = this._types[typeKeyOrClass]
+      assert(typeObj, `ClassCache: typeKey (${typeKeyOrClass}) must be registered before use`)
+      InstanceClass = typeObj.class || typeObj
+      typeOpts = typeObj.opts || {}
+    }
+    assert(typeof InstanceClass === 'function', `ClassCache: Class or typeKey must not be undefined without a 'default' typeKey registered.`)
+    const { args = [] } = Object.assign({}, typeOpts, opts)
+    const cacheBundle = {
+      class: InstanceClass,
+      instance: new InstanceClass(...args),
+      ...opts
+    }
+    return cacheBundle
   }
 
   set () {}

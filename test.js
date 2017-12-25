@@ -35,15 +35,34 @@ test('class-cache simple object registration', t => {
     bar: Class3
   })
 
-  const a = c.get('a')
+  let a = c.get('a')
   t.ok(a instanceof Class1)
   t.equal(a, c.get('a'))
-  const b = c.get('b', 'foo')
-  const cc = c.get('cc', 'bar')
 
+  let b = c.get('b', 'foo')
   t.ok(b instanceof Class2, 'b is instance of Class2')
   t.equal(b, c.get('b', 'foo'), 'b same instance as second lookup')
-  t.ok(cc instanceof Class3, 'cc is instance of Class3')
-  t.equal(cc, c.get('cc', 'bar'), 'cc is same instance on second lookup')
+  t.ok(c.get('b') instanceof Class1, 'changing the type or class during get re-instantiates')
+
+  let d = c.get('cc', 'bar')
+
+  t.ok(d instanceof Class3, 'cc is instance of Class3')
+  t.equal(d, c.get('cc', 'bar'), 'cc is same instance on second lookup')
+
+  t.end()
+})
+
+test('class-cache argument registration', t => {
+  const c = new ClassCache()
+
+  c.register(Class1)
+  c.register('foo', Class2)
+
+  t.ok(c.get('instance1') instanceof Class1, 'default argument registration works')
+  t.ok(c.get('instance2', 'foo') instanceof Class2, 'named argument registration works')
+  const instance3 = c.get('instance3', Class3, 'unregisterd class get works')
+  t.ok(instance3 instanceof Class3, 'unregistered get returns the unregistered class isntance')
+  t.equal(instance3, c.get('instance3', Class3), 'subsequent lookup caches')
+  t.notEqual(instance3, c.get('instance3', Class2), 're-instantiate unregisted get if class changes')
   t.end()
 })

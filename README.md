@@ -95,7 +95,7 @@ Omitting optional method arguments delegates to the next most specific option.
 ```js
 c.get('some-key') // Return or create the 'default' Class
 c.get('some-key', {args: ['arg0', 'arg2']})
-c.get('some-key', null, {args: ['arg0', 'arg2']}) // Return the default registerd class with specific args
+c.get('some-key', null, {args: ['arg0', 'arg2']}) // Return the default registered class with specific args
 c.get('some-key', 'some-type', ['arg0', 'arg2']) // Return the `some-type` class at `some-key`.
 
 c.get('some-key', SomeOtherClass)

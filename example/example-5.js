@@ -1,7 +1,6 @@
 const CC = require('class-cache')
 const Class = require('some-class')
-const FooClass = require('foo-class')
-const BarClass = require('foo-class')
+const BazClass = require('baz-class')
 
 function gc (instance, key, Class) {
   return instance.element
@@ -21,7 +20,7 @@ const opts = { args, gc }
 c.register(Class)
 // Same as
 c.register({
-  default: Class
+  default: { class: Class }
 })
 c.register(Class, {opts})
 // same as
@@ -44,7 +43,7 @@ c.register({
 // Define types using object syntax
 c.register({
   default: Class,
-  baz: {class: Class, ...opts}
+  baz: {class: BazClass, ...opts}
 })
 
 c.get('my-instance') // Create or return default class instance at key. Throws if a default class isn't set
@@ -55,7 +54,7 @@ c.get('my-instance', 'baz', {opts})
 c.get('my-instance', Class)
 c.get('my-instance', Class, {opts})
 
-c.gc() // run gc functions pruning unregisterd instances
+c.gc() // run gc functions pruning unregistered instances
 c.clear() // clear all instances
 c.delete('foo') // clear specific key
 c.has('foo') // check if instantiated by key
