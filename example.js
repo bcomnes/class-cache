@@ -49,12 +49,12 @@ c.register({
 })
 
 c.get('my-instance') // Create or return default class instance at key. Throws if a default class isn't set
-c.get('my-instance', {opts})
-c.get('my-instance', null, {opts})
+c.get('my-instance', {...opts})
+c.get('my-instance', null, {...opts})
 c.get('my-instance', 'baz') // create or return existing instance of type 'baz'.  Throws if 'baz' is not defined
-c.get('my-instance', 'baz', {opts})
+c.get('my-instance', 'baz', {...opts})
 c.get('my-instance', Class)
-c.get('my-instance', Class, {opts})
+c.get('my-instance', Class, {...opts})
 
 c.gc() // run gc functions pruning unregistered instances
 c.clear() // clear all instances
