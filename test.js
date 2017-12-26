@@ -8,9 +8,14 @@ class TestClass {
   }
 }
 
-class Class1 extends TestClass {}
-class Class2 extends TestClass {}
-class Class3 extends TestClass {}
+class Class1 extends TestClass { }
+class Class2 extends TestClass { }
+class Class3 extends TestClass { }
+class Class4 {
+  constructor (opts = {}) {
+    this.opts = opts
+  }
+}
 
 test('class-cache interface', t => {
   t.equal(typeof ClassCache, 'function', 'ClassCache exports a function')
@@ -68,7 +73,7 @@ test('class-cache argument registration', t => {
 })
 
 test('class-cache argument cascade', t => {
-  const c = new ClassCache({args: ['root name']})
+  const c = new ClassCache({ args: ['root name'] })
 
   c.register(Class1, { args: ['default name'] })
 
@@ -77,10 +82,41 @@ test('class-cache argument cascade', t => {
   c.register('other-class', Class2)
   const instance2 = c.get('bar', 'other-class')
   t.equal(instance2.name, 'root name', 'create another class without args')
-  const instance3 = c.get('baz', Class3, {args: ['third name']})
+  const instance3 = c.get('baz', Class3, { args: ['third name'] })
   t.equal(instance3.name, 'third name', 'create class with specific args')
-  const instance4 = c.get('biz', {args: ['fourth name']})
+  const instance4 = c.get('biz', { args: ['fourth name'] })
   t.equal(instance4.name, 'fourth name', 'default instance with specific opts')
-  t.equal(c.get('biz', {args: ['fifth name']}).name, 'fourth name', 'args are ignored if already created')
+  t.equal(c.get('biz', { args: ['fifth name'] }).name, 'fourth name', 'args are ignored if already created')
+  t.equal(c.set('biz', { args: ['fifth name'] }).name, 'fifth name', 'Setting re-instantiates')
+  t.end()
+})
+
+test('gc cascade', t => {
+  const c = new ClassCache({
+    gc: instance => true // default GG
+  })
+
+  c.register(Class1, { args: ['default name'] })
+  c.register('dont-gc', Class2, { gc: instance => false })
+  c.register('instance-based-gc', Class4, { gc: instance => instance.opts.gc })
+
+  c.get(1) // will gc
+  c.get(2, 'dont-gc') // wont gc
+  c.get(3, 'dont-gc', { gc: instance => true }) // will gc
+  c.get(4, 'instance-based-gc', { args: [{gc: true}] })
+  c.get(5, 'instance-based-gc', { args: [{gc: false}] })
+  c.get(6, { gc: instance => false }) // wont gc
+
+  c.gc()
+  t.ok(c.has(2), 'default gc function honored')
+  t.ok(c.has(5), 'instance based gc honored')
+  t.ok(c.has(6), 'instance gc honored')
+
+  c.delete(6)
+
+  t.ok(!c.has(6), 'instance key deleted')
+
+  c.clear()
+  t.ok(!c.has(2) && !c.has(5), 'remaining keys deleted')
   t.end()
 })

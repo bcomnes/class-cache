@@ -8,7 +8,6 @@
   },
   "devDependencies": {
     "@tap-format/spec": "^0.2.0",
-    "dependency-check": "^2.6.0",
     "existy": "^1.0.1",
     "npm-run-all": "^4.0.2",
     "standard": "^10.0.0",
@@ -17,14 +16,10 @@
   },
   "homepage": "https://github.com/bcomnes/class-cache#readme",
   "keywords": [
-    "bel",
-    "cache-component",
-    "choo",
-    "element",
-    "embed",
-    "map",
-    "nanocomponent",
-    "nanomorph"
+    "class",
+    "cache",
+    "controller",
+    "ES6"
   ],
   "license": "MIT",
   "main": "index.js",
@@ -36,15 +31,9 @@
     "url": "git+https://github.com/bcomnes/class-cache.git"
   },
   "scripts": {
-    "start": "budo example/complex/index.js --live --open",
-    "start:simple": "budo example/simple/index.js --live --open",
-    "start:test": "budo test.js --live --open",
     "test": "run-s test:*",
     "test:node": "tape test.js | tap-format-spec",
-    "test-skip:browser": "browserify test.js | tape-run | tap-format-spec",
-    "test-skip:deps": "dependency-check .",
-    "test:lint": "standard",
-    "build": "bankai build example/complex/index.js dist"
+    "test:lint": "standard"
   },
   "dependencies": {
     "nanoassert": "^1.1.0"

@@ -12,7 +12,7 @@ const c = new CC({
 })
 
 const args = [ 'biz', 'baz' ] // applied as args when args is an array
-// const args = { foo: bar } || 'foo' || () => {} // arg[0]
+// const args = { foo: bar } || 'foo' || () => {} // arg[0]  NOT IMPLEMENTED YET
 // const args = [ [123] ] //arg[0] array
 
 const opts = { args, gc }

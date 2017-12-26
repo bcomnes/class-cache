@@ -92,13 +92,48 @@ class ClassCache {
     return cacheBundle
   }
 
-  set (key, typeKeyOrClass = 'default', opts) {}
-  gc () {}
-  clear () {
+  set (key, typeKeyOrClass = 'default', opts) {
+    assert(key, 'ClassCache: instance key is required')
+    if (typeof typeKeyOrClass === 'object') {
+      opts = typeKeyOrClass
+      typeKeyOrClass = 'default'
+    }
 
+    const newCacheBundle = this._createInstance(typeKeyOrClass, opts)
+    this._cache[key] = newCacheBundle
+    return newCacheBundle.instance
   }
-  delete () {}
-  has () {}
+
+  gc () {
+    const willGC = []
+    for (const key in this._cache) {
+      const cacheBundle = this._cache[key]
+      if (cacheBundle.gc(cacheBundle.instance)) willGC.push(key)
+    }
+    willGC.forEach(gcKey => delete this._cache[gcKey])
+  }
+
+  clear () {
+    for (const key in this._cache) {
+      const cacheBundle = this._cache[key]
+      cacheBundle.gc(cacheBundle.instance, true) // notify instance its being GC'd
+    }
+    this._cache = {}
+  }
+
+  delete (key) {
+    assert(key, 'ClassCache: instance key is required')
+    if (!this.has(key)) return false
+    const cacheBundle = this._cache[key]
+    cacheBundle.gc(cacheBundle.instance, true)
+    delete this._cache[key]
+    return true
+  }
+
+  has (key) {
+    assert(key, 'ClassCache: instance key is required')
+    return !!this._cache[key]
+  }
 }
 
 module.exports = ClassCache
