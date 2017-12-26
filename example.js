@@ -2,8 +2,10 @@ const CC = require('class-cache')
 const Class = require('some-class')
 const BazClass = require('baz-class')
 
-function gc (instance, key, Class) {
-  return instance.element
+function gc (instance, key, forceGC) {
+  // forceGC is true when the key is deleted or the cache is cleared.  use that as a queue to
+  // release resources
+  return true // true to gc, false to keep
 }
 
 const c = new CC({

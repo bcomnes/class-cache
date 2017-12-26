@@ -2,5 +2,5 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
-* engage
+## 1.0.0 2017-12-25
+* engage 🎄

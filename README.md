@@ -118,11 +118,11 @@ This is used to clean out instances you no longer need.
 
 ### `c.clear()`
 
-Clear all `key` instances.  The `gc` functions for each instance will be run receiving the following signature: `(instance, true) => {}`.  If your instance needs to let go of resources, watch for the second argument to equal true, indicating tht the instance will be deleted.  
+Clear all `key` instances.  The `gc` functions for each instance will be run receiving the following signature: `(instance, key, true) => {}`.  If your instance needs to let go of resources, watch for the second argument to equal true, indicating tht the instance will be deleted.  
 
 ### `c.delete(key)`
 
-Delete specific `key` instance.  Will run the `gc` function passing `true` as the second argument (`(instance, true) => {}`).
+Delete specific `key` instance.  Will run the `gc` function passing `true` as the second argument (`(instance, key, true) => {}`).
 
 ### `c.has(key)`
 

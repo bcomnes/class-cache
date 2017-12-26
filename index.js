@@ -2,7 +2,7 @@ const assert = require('assert')
 
 class ClassCache {
   constructor (opts = {}) {
-    const { gc = instance => false, args = [] } = opts // Top level defaults
+    const { gc = (instance, key) => false, args = [] } = opts // Top level defaults
     this._opts = { gc, args }
     this._types = {}
     this._cache = {}
@@ -108,7 +108,7 @@ class ClassCache {
     const willGC = []
     for (const key in this._cache) {
       const cacheBundle = this._cache[key]
-      if (cacheBundle.gc(cacheBundle.instance)) willGC.push(key)
+      if (cacheBundle.gc(cacheBundle.instance, key)) willGC.push(key)
     }
     willGC.forEach(gcKey => delete this._cache[gcKey])
   }
@@ -116,7 +116,7 @@ class ClassCache {
   clear () {
     for (const key in this._cache) {
       const cacheBundle = this._cache[key]
-      cacheBundle.gc(cacheBundle.instance, true) // notify instance its being GC'd
+      cacheBundle.gc(cacheBundle.instance, key, true) // notify instance its being GC'd
     }
     this._cache = {}
   }
@@ -125,7 +125,7 @@ class ClassCache {
     assert(key, 'ClassCache: instance key is required')
     if (!this.has(key)) return false
     const cacheBundle = this._cache[key]
-    cacheBundle.gc(cacheBundle.instance, true)
+    cacheBundle.gc(cacheBundle.instance, key, true)
     delete this._cache[key]
     return true
   }
