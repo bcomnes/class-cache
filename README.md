@@ -2,7 +2,7 @@
 [![npm version][2]][3] [![build status][4]][5]
 [![downloads][8]][9] [![js-standard-style][10]][11]
 
-Cache a class instance by key.  Creates a new instance if the key doesn't exist, otherwise returns the cached instance.
+Cache a class instance by key.  Creates a new instance if the key doesn't exist, otherwise returns the cached instance.  Uses the prototype chain to delegate options.
 
 ## Usage
 
@@ -23,7 +23,7 @@ console.log(a === b) // true
 
 c.register({
   'some-class': SomeClass,
-  'another-class': {class: AnotherClass, args: ['class', 'specific']
+  'another-class': {class: AnotherClass, args: ['class', 'specific'], gc: instance => instance.coolToGC}
 })
 
 c.get('some-instance', 'some-class') // return new SomeClass instance
@@ -46,7 +46,8 @@ Create a new component.
 
 ```js
 {
-  gc: (instance) => true // a default garbage collection function
+  gc: (instance) => false // a default garbage collection function
+  args: [] // Default args used for instantiating all classes
 }
 ```
 
@@ -57,7 +58,8 @@ Define a `Class` for the optional `typeKey`.  The default `typeKey` is `default`
 ```js
 {
   gc: undefined // a typeKey specific GC function,
-  args: [] // default arguments instance arguments
+  args: undefined // default arguments instance arguments
+  // These options delegate to the top level options if left un-implemented
 }
 ```
 
@@ -96,9 +98,8 @@ Omitting optional method arguments delegates to the next most specific option.
 c.get('some-key') // Return or create the 'default' Class
 c.get('some-key', {args: ['arg0', 'arg2']})
 c.get('some-key', null, {args: ['arg0', 'arg2']}) // Return the default registered class with specific args
-c.get('some-key', 'some-type', ['arg0', 'arg2']) // Return the `some-type` class at `some-key`.
-
-c.get('some-key', SomeOtherClass)
+c.get('some-key', 'some-type', { args: ['arg0', 'arg2'] }) // Return the `some-type` class at `some-key`.
+c.get('some-key', SomeOtherClass, { args: ['arg0', 'arg2'], gc: instance => true })
 ```
 
 If `key` is already instantiated, `args` is ignored.  Pass changing properties as subsequent calls to the returned instance.  If `type` or `Class` changes, the `key` instance is re-instantiated.
@@ -117,11 +118,11 @@ This is used to clean out instances you no longer need.
 
 ### `c.clear()`
 
-Clear all `key` instances.  
+Clear all `key` instances.  The `gc` functions for each instance will be run receiving the following signature: `(instance, true) => {}`.  If your instance needs to let go of resources, watch for the second argument to equal true, indicating tht the instance will be deleted.  
 
 ### `c.delete(key)`
 
-Delete specific `key` instance.
+Delete specific `key` instance.  Will run the `gc` function passing `true` as the second argument (`(instance, true) => {}`).
 
 ### `c.has(key)`
 
