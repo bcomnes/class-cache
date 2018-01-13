@@ -88,6 +88,7 @@ class ClassCache {
     }
     assert(typeof InstanceClass === 'function', `ClassCache: Class or typeKey must not be undefined without a 'default' typeKey registered.`)
     assert(Array.isArray(cacheBundle.args), `ClassCache: args (${cacheBundle.args}) must be an array`)
+    // cacheBundle.instance = new InstanceClass(...cacheBundle.args)
     cacheBundle.instance = new (Function.prototype.bind.apply(InstanceClass, [null].concat(cacheBundle.args))) // eslint-disable-line new-parens
     return cacheBundle
   }
