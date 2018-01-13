@@ -76,7 +76,7 @@ class ClassCache {
 
   _createInstance (typeKeyOrClass, opts) {
     let InstanceClass = typeKeyOrClass
-    let cacheBundle = {...opts}
+    let cacheBundle = Object.assign({}, opts)
     if (typeof typeKeyOrClass === 'string') {
       const typeObj = this._types[typeKeyOrClass]
       assert(typeObj, `ClassCache: typeKey (${typeKeyOrClass}) must be registered before use`)

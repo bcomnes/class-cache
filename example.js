@@ -10,10 +10,10 @@ function gc (instance, key, forceGC) {
 
 const c = new CC({
   gc // DEFAULT GC function... most of the time you do this
-     // Return bool to keep or toss
+  // Return bool to keep or toss
 })
 
-const args = [ 'biz', 'baz' ] // applied as args when args is an array
+const args = ['biz', 'baz'] // applied as args when args is an array
 // const args = { foo: bar } || 'foo' || () => {} // arg[0]  NOT IMPLEMENTED YET
 // const args = [ [123] ] //arg[0] array
 
@@ -24,7 +24,8 @@ c.register(Class)
 c.register({
   default: { class: Class }
 })
-c.register(Class, {opts})
+c.register(Class, { opts })
+c.register('default', Class, { opts })
 // same as
 c.register({
   default: { class: Class, ...opts }
@@ -36,7 +37,7 @@ c.register({
   'type-key': Class
 })
 
-c.register('type-key', Class, {opts})
+c.register('type-key', Class, { opts })
 // same as
 c.register({
   'type-key': { class: Class, ...opts }
@@ -45,16 +46,16 @@ c.register({
 // Define types using object syntax
 c.register({
   default: Class,
-  baz: {class: BazClass, ...opts}
+  baz: { class: BazClass, ...opts }
 })
 
 c.get('my-instance') // Create or return default class instance at key. Throws if a default class isn't set
-c.get('my-instance', {...opts})
-c.get('my-instance', null, {...opts})
+c.get('my-instance', { ...opts })
+c.get('my-instance', null, { ...opts })
 c.get('my-instance', 'baz') // create or return existing instance of type 'baz'.  Throws if 'baz' is not defined
-c.get('my-instance', 'baz', {...opts})
+c.get('my-instance', 'baz', { ...opts })
 c.get('my-instance', Class)
-c.get('my-instance', Class, {...opts})
+c.get('my-instance', Class, { ...opts })
 
 c.gc() // run gc functions pruning unregistered instances
 c.clear() // clear all instances

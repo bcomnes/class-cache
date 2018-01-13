@@ -57,6 +57,17 @@ test('class-cache simple object registration', t => {
   t.end()
 })
 
+test('class-cache default key', t => {
+  const c = new ClassCache()
+  c.register('default', Class1)
+
+  let a = c.get('a')
+  t.ok(a instanceof Class1, 'default register key registers a default class')
+  t.equal(a, c.get('a'), 'instances are returned')
+
+  t.end()
+})
+
 test('class-cache argument registration', t => {
   const c = new ClassCache()
 
@@ -103,8 +114,8 @@ test('gc cascade', t => {
   c.get(1) // will gc
   c.get(2, 'dont-gc') // wont gc
   c.get(3, 'dont-gc', { gc: instance => true }) // will gc
-  c.get(4, 'instance-based-gc', { args: [{gc: true}] })
-  c.get(5, 'instance-based-gc', { args: [{gc: false}] })
+  c.get(4, 'instance-based-gc', { args: [{ gc: true }] })
+  c.get(5, 'instance-based-gc', { args: [{ gc: false }] })
   c.get(6, { gc: instance => false }) // wont gc
 
   c.gc()
