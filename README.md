@@ -2,7 +2,7 @@
 [![npm version][2]][3] [![build status][4]][5]
 [![downloads][8]][9] [![js-standard-style][10]][11]
 
-Cache a class instance by key.  Creates a new instance if the key doesn't exist, otherwise returns the cached instance.  Uses the prototype chain to delegate options.  Built as a general base class for [nanocomponent-cache][ncc].
+Cache a class instance by key.  Creates a new instance if the key doesn't exist, otherwise returns the cached instance.  Uses the prototype chain to delegate options.  Optional LRU garbage collection.  Built as a general base class for [nanocomponent-cache][ncc].
 
 ## Usage
 
@@ -13,7 +13,7 @@ const SomeClass = require('some-class')
 const AnotherClass = require('another-class')
 const AThirdClass = require('a-third-class')
 
-const c = new ClassCache()
+const c = new ClassCache({ lru: 1000 })
 
 c.register(DefaultClass, {args: ['some', {default: 'constructor-args'}]})
 
@@ -31,6 +31,8 @@ c.get('some-instance', 'some-class') // return same instance as above
 c.get('some-instance', 'another-class') // Create AnotherClass instance and replace the SomeClass instance stored at 'some-instance'
 ```
 
+- [example.js](example.js)
+
 ## Installation
 ```sh
 $ npm install class-cache
@@ -47,7 +49,8 @@ Create a new component.
 ```js
 {
   gc: (instance) => false // a default garbage collection function
-  args: [] // Default args used for instantiating all classes
+  args: [] // Default args used for instantiating all classes,
+  lru: 0 // Enable LRU gc by setting this to an integer greater than 0
 }
 ```
 
@@ -129,6 +132,10 @@ Delete specific `key` instance.  Will run the `gc` function passing `true` as th
 Return true if `key` exists. 
 
 See examples for more details.
+
+### `c.cache`
+
+Getter that returns a snapshot of the cache for inspection.
 
 ## See Also
 

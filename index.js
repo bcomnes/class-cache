@@ -2,10 +2,15 @@ const assert = require('assert')
 
 class ClassCache {
   constructor (opts = {}) {
-    const { gc = (instance, key) => false, args = [] } = opts // Top level defaults
-    this._opts = { gc, args }
+    const { gc = (instance, key) => false, args = [], lru = 0 } = opts // Top level defaults
+    this._opts = { gc, args, lru }
     this._types = {}
     this._cache = {}
+    this._lru = []
+  }
+
+  get cache () {
+    return Object.assign({}, this._cache)
   }
 
   register (typeKey, Class, opts) {
@@ -55,6 +60,7 @@ class ClassCache {
       typeKeyOrClass = 'default'
     }
     const cacheBundle = this._cache[key]
+    if (this._opts.lru) this._lruSet(key)
     if (cacheBundle && this._isSameType(cacheBundle, typeKeyOrClass)) {
       return cacheBundle.instance
     } else {
@@ -93,6 +99,28 @@ class ClassCache {
     return cacheBundle
   }
 
+  _lruSet (key) {
+    const i = this._lru.indexOf(key)
+    if (i >= 0) {
+      this._lru.splice(i, 1)
+    }
+    this._lru.unshift(key)
+    if (this._lru.length > this._opts.lru) {
+      const lastKey = this._lru.pop()
+      const cacheBundle = this._cache[lastKey]
+      cacheBundle.gc(cacheBundle.instance, lastKey, true)
+      delete this._cache[lastKey]
+    }
+  }
+
+  _lruDelete (key) {
+    const i = this._lru.indexOf(key)
+    if (i >= 0) {
+      this._lru.splice(i, 1)
+    }
+    delete this._cache[key]
+  }
+
   set (key, typeKeyOrClass = 'default', opts) {
     assert(key, 'ClassCache: instance key is required')
     if (typeof typeKeyOrClass === 'object') {
@@ -111,7 +139,7 @@ class ClassCache {
       const cacheBundle = this._cache[key]
       if (cacheBundle.gc(cacheBundle.instance, key)) willGC.push(key)
     }
-    willGC.forEach(gcKey => delete this._cache[gcKey])
+    willGC.forEach(gcKey => this._opts.lru ? this._lruDelete(gcKey) : delete this._cache[gcKey])
   }
 
   clear () {
@@ -120,6 +148,7 @@ class ClassCache {
       cacheBundle.gc(cacheBundle.instance, key, true) // notify instance its being GC'd
     }
     this._cache = {}
+    if (this._opts.lru) this._lru = []
   }
 
   delete (key) {
@@ -127,7 +156,7 @@ class ClassCache {
     if (!this.has(key)) return false
     const cacheBundle = this._cache[key]
     cacheBundle.gc(cacheBundle.instance, key, true)
-    delete this._cache[key]
+    if (this._opts.lru) { this._lruDelete(key) } else { delete this._cache[key] }
     return true
   }
 

@@ -131,3 +131,34 @@ test('gc cascade', t => {
   t.ok(!c.has(2) && !c.has(5), 'remaining keys deleted')
   t.end()
 })
+
+test('lru', t => {
+  const c = new ClassCache({
+    gc: instance => true, // default GG
+    lru: 5
+  })
+  let gcCalled = false
+
+  c.register(Class1)
+
+  c.get(1, { gc: (instance, key, force) => {
+    gcCalled = force
+    return true
+  } }) // will gc
+  c.get(2) // wont gc
+  c.get(3) // will gc
+  c.get(4)
+  c.get(5)
+  t.equal(Object.keys(c.cache).length, 5, 'can fill the LRU')
+  c.get(6)
+  t.equal(Object.keys(c.cache).length, 5, 'lru ejects when full')
+  t.true(gcCalled, 'gc was called on ejection')
+  t.false(c.has(1), 'the first key is ejected')
+  c.get(2)
+  c.get(2)
+  c.get(2)
+  c.get(1)
+  t.false(c.has(3), 'the third key is ejected after getting 2 and 3 again')
+
+  t.end()
+})
