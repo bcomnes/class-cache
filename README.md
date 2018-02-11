@@ -2,7 +2,7 @@
 [![npm version][2]][3] [![build status][4]][5]
 [![downloads][8]][9] [![js-standard-style][10]][11]
 
-Cache a class instance by key.  Creates a new instance if the key doesn't exist, otherwise returns the cached instance.  Uses the prototype chain to delegate options.
+Cache a class instance by key.  Creates a new instance if the key doesn't exist, otherwise returns the cached instance.  Uses the prototype chain to delegate options.  Built as a general base class for [nanocomponent-cache][ncc].
 
 ## Usage
 
@@ -130,6 +130,11 @@ Return true if `key` exists.
 
 See examples for more details.
 
+## See Also
+
+- [nanocomponent-cache][ncc]: A class-cache subclass that ships sensible defaults for [nanocomponents][nc].  If you are using this with [choo][choo], you should probably use that instead.
+- [Choo component discussions][choo-component]: There are a number of ideas on how to solve this class of problems.  See discusson here.
+
 ## License
 [MIT](https://tldrlegal.com/license/mit-license)
 
@@ -155,3 +160,5 @@ See examples for more details.
 [choo]: https://github.com/choojs/choo
 [nca]: https://github.com/choojs/nanocomponent-adapters
 [nc]: https://github.com/choojs/nanocomponent
+[ncc]: https://github.com/bcomnes/nanocomponent-cache
+[choo-component]: https://github.com/choojs/choo/issues/593#issuecomment-364555843
