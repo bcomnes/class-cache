@@ -38,7 +38,7 @@ c.get('some-instance', 'another-class') // Create AnotherClass instance and repl
 $ npm install class-cache
 ```
 ## API
-### `ClassCache = require('class-cache`)
+### `ClassCache = require('class-cache')`
 Import `ClassCache` class.
 
 ### `c = new ClassCache([opts])`
