@@ -10,7 +10,7 @@
     "@tap-format/spec": "^0.2.0",
     "existy": "^1.0.1",
     "npm-run-all": "^4.0.2",
-    "standard": "^11.0.0",
+    "standard": "^13.1.0",
     "tape": "^4.7.0",
     "tape-run": "^6.0.0"
   },
