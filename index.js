@@ -43,7 +43,7 @@ class ClassCache {
   }
 
   _registerArgs (typeKey, Class, opts) {
-    let classBundle = Object.assign({ class: Class }, opts)
+    const classBundle = Object.assign({ class: Class }, opts)
     this._registerTypeObj({
       [typeKey]: classBundle
     })
@@ -82,7 +82,7 @@ class ClassCache {
 
   _createInstance (typeKeyOrClass, opts) {
     let InstanceClass = typeKeyOrClass
-    let cacheBundle = Object.assign({}, opts)
+    const cacheBundle = Object.assign({}, opts)
     if (typeof typeKeyOrClass === 'string') {
       const typeObj = this._types[typeKeyOrClass]
       assert(typeObj, `ClassCache: typeKey (${typeKeyOrClass}) must be registered before use`)

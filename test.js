@@ -40,16 +40,16 @@ test('class-cache simple object registration', t => {
     bar: Class3
   })
 
-  let a = c.get('a')
+  const a = c.get('a')
   t.ok(a instanceof Class1)
   t.equal(a, c.get('a'))
 
-  let b = c.get('b', 'foo')
+  const b = c.get('b', 'foo')
   t.ok(b instanceof Class2, 'b is instance of Class2')
   t.equal(b, c.get('b', 'foo'), 'b same instance as second lookup')
   t.ok(c.get('b') instanceof Class1, 'changing the type or class during get re-instantiates')
 
-  let d = c.get('cc', 'bar')
+  const d = c.get('cc', 'bar')
 
   t.ok(d instanceof Class3, 'cc is instance of Class3')
   t.equal(d, c.get('cc', 'bar'), 'cc is same instance on second lookup')
@@ -61,7 +61,7 @@ test('class-cache default key', t => {
   const c = new ClassCache()
   c.register('default', Class1)
 
-  let a = c.get('a')
+  const a = c.get('a')
   t.ok(a instanceof Class1, 'default register key registers a default class')
   t.equal(a, c.get('a'), 'instances are returned')
 
