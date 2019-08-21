@@ -141,10 +141,12 @@ test('lru', t => {
 
   c.register(Class1)
 
-  c.get(1, { gc: (instance, key, force) => {
-    gcCalled = force
-    return true
-  } }) // will gc
+  c.get(1, {
+    gc: (instance, key, force) => {
+      gcCalled = force
+      return true
+    }
+  }) // will gc
   c.get(2) // wont gc
   c.get(3) // will gc
   c.get(4)
